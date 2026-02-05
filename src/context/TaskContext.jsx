@@ -14,8 +14,17 @@ export const TaskProvider = ({ children }) => {
   }, [tasks]);
 
   const addTask = (task) => {
-    const newTask = { ...task, id: Date.now(), timeSpent: 0, status: 'Open', history: [] };
+    const newTask = { 
+      ...task, 
+      id: Date.now(), 
+      timeSpent: 0, 
+      status: 'Open', 
+      createdAt: new Date().toLocaleDateString() 
+    };
     setTasks([...tasks, newTask]);
+  };
+  const updateTask = (id, updatedFields) => {
+    setTasks(tasks.map(t => t.id === id ? { ...t, ...updatedFields } : t));
   };
 
   const deleteTask = (id) => {
@@ -29,19 +38,19 @@ export const TaskProvider = ({ children }) => {
   };
 
   const requestClosure = (id) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, status: 'Pending Approval' } : t));
+    updateTask(id, { status: 'Pending Approval' });
   };
 
   const approveClosure = (id) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, status: 'Closed' } : t));
+    updateTask(id, { status: 'Closed' });
   };
 
   const rejectClosure = (id) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, status: 'In Progress' } : t));
+    updateTask(id, { status: 'In Progress' });
   };
 
   return (
-    <TaskContext.Provider value={{ tasks, addTask, deleteTask, logTime, requestClosure, approveClosure, rejectClosure }}>
+    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask, logTime, requestClosure, approveClosure, rejectClosure }}>
       {children}
     </TaskContext.Provider>
   );
